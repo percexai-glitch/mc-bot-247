@@ -12,7 +12,7 @@ const options = {
     host: 'Crazyguys98.aternos.me',
     port: 34408, // <--- IMPORTANT: Har baar Aternos se check karke yahan update karo
     offline: false,
-    version: '26.13',
+    version: '26.10',
     conntimeout: 120000,
     raknetBackend: 'js', // Cloud ke liye 'js' backend best hai
     skipPing: true,
