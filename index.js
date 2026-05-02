@@ -2,44 +2,63 @@ const bedrock = require('bedrock-protocol');
 const express = require('express');
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-app.get('/', (req, res) => res.send('Bot is Alive!'));
-app.listen(PORT, () => console.log(`Web server on port ${PORT}`));
+// 1. Render ko jagaye rakhne ke liye Web Server
+const PORT = process.env.PORT || 10000;
+app.get('/', (req, res) => res.send('Bot is Running 24/7!'));
+app.listen(PORT, () => console.log(`Web Monitor link ready on port ${PORT}`));
 
+// 2. Bot Configuration
 const options = {
-  host: 'Crazyguys98.aternos.me',
-  port: 34408,
-  username: 'CrazyBot_247', 
-  offline: false,
-  version: '26.10', // '26.10' ki jagah ye try karo, ye zyada stable hai connection ke liye
-  conntimeout: 10000,
-  raknetBackend: 'raknet-native' // Isse connection fast hota hai
+    host: 'Crazyguys98.aternos.me',
+    port: 34408, // <--- IMPORTANT: Har baar Aternos se check karke yahan update karo
+    offline: false,
+    version: '26.13',
+    conntimeout: 120000,
+    raknetBackend: 'js', // Cloud ke liye 'js' backend best hai
+    skipPing: true,
+    profilesFolder: './auth-cache'
 };
 
-function startBot() {
-  console.log('Bot connect karne ki koshish kar raha hai...');
-  
-  try {
+function createBot() {
+    console.log('--- Bot starting sequence ---');
     const client = bedrock.createClient(options);
 
     client.on('spawn', () => {
-      console.log('Success! Bot server ke andar hai.');
+        console.log('SUCCESS: Bot server mein pahunch gaya hai!');
+        
+        // Anti-AFK Action: Har 10 second mein jump karna
+        setInterval(() => {
+            if (client) {
+                client.queue('player_auth_input', {
+                    pitch: 0, yaw: 0, position: { x: 0, y: 0, z: 0 },
+                    move_vector: { x: 0, z: 0 }, head_yaw: 0, input_data: { _value: 0, jumping: true },
+                    input_mode: 'mouse', play_mode: 'screen', interaction_model: 'touch',
+                    tick: 0, delta: { x: 0, y: 0, z: 0 }
+                });
+            }
+        }, 10000);
+
+        // Har 5 minute mein chat message
+        setInterval(() => {
+            client.queue('text', {
+                type: 'chat', needs_translation: false, source_name: client.username,
+                xuid: '', platform_chat_id: '', message: 'Bot 24/7 Active Hai!'
+            });
+        }, 300000);
     });
 
     client.on('error', (err) => {
-      // Agar MTU error aaye toh ignore karke wapas connect karenge
-      console.log('Connection error:', err.message);
+        console.log('Error Alert: ' + err.message);
+        if (err.message.includes('timeout')) {
+            console.log('Timeout error, reconnecting...');
+            setTimeout(createBot, 10000);
+        }
     });
 
     client.on('close', () => {
-      console.log('Connection lost. 15 seconds me restart karenge...');
-      setTimeout(startBot, 15000);
+        console.log('Connection lost. Reconnecting in 15 seconds...');
+        setTimeout(createBot, 15000);
     });
-
-  } catch (e) {
-    console.log('Critical Error:', e);
-    setTimeout(startBot, 15000);
-  }
 }
 
-startBot();
+createBot();
