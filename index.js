@@ -9,14 +9,14 @@ app.listen(PORT, () => console.log(`Web Monitor link ready on port ${PORT}`));
 
 // 2. Bot Configuration
 const options = {
-    host: 'Crazyguys98.aternos.me',
-    port: 34408, // <--- IMPORTANT: Har baar Aternos se check karke yahan update karo
-    offline: false,
-    version: '26.10',
-    conntimeout: 120000,
-    raknetBackend: 'js', // Cloud ke liye 'js' backend best hai
-    skipPing: true,
-    profilesFolder: './auth-cache'
+  host: 'Crazyguys98.aternos.me',
+  port: 34408, 
+  offline: false,
+  version: '26.10', // Isse 26.10 hi rehne dena
+  conntimeout: 120000, 
+  // raknetBackend wali line humne hata di hai (isise error aa raha tha)
+  skipPing: true,    
+  profilesFolder: './auth-cache'
 };
 
 function createBot() {
